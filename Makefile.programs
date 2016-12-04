@@ -74,7 +74,7 @@ LIBDIR    = lib
 LIBFILE   = midifile
 LIBPATH   = $(LIBDIR)/lib$(LIBFILE).a
 TARGDIR   = bin
-COMPILER  = LANG=C $(ENV) g++ $(ARCH)
+COMPILER  = LANG=C $(ENV) clang++-3.8 $(ARCH)
 DEFINES   = 
 PREFLAGS  = -O3 -Wall -I$(INCDIR) $(DEFINES)
 # Add -static flag to compile without dynamics libraries for better portability:
@@ -160,6 +160,7 @@ ifeq ($(wildcard $(LIBDIR)),)
 	$(MAKE) -f Makefile.library
 endif
 	@echo [CC] $@
+	@echo $(COMPILER) $(PREFLAGS) $@ $< $(POSTFLAGS) $@$(EXTEN)
 	@$(COMPILER) $(PREFLAGS) -o $@ $< $(POSTFLAGS) \
 		&& strip $@$(EXTEN)
 
@@ -171,6 +172,7 @@ endif
 ifeq ($(wildcard $(LIBDIR)),)
 	$(MAKE) -f Makefile.library
 endif
+	@echo $(COMPILER) $(PREFLAGS) -o $(TARGDIR)/$@ $< $(POSTFLAGS)
 	@echo [CC] $@
 	@$(COMPILER) $(PREFLAGS) -o $(TARGDIR)/$@ $< $(POSTFLAGS) \
 		&& strip $(TARGDIR)/$@$(EXTEN)

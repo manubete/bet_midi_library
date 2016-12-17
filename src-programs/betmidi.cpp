@@ -10,6 +10,7 @@
 
 #include "MidiFile.h"
 #include <cstring>
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <queue>
@@ -30,12 +31,12 @@ int main(int argc, char** argv) {
 
    queue <string> string_sequences;
    string st_seq = "";
-   queue <vector<int>> int_sequences;
-   vector<int> pitch_dur_arr;
+   queue <vector<float>> float_sequences;
+   vector<float> pitch_dur_arr;
 
 
-   int f_melody[50];
-   int f_rhythm[50];
+   float f_melody[50];
+   float f_rhythm[50];
 
    // int bass_in[50];
    // int bass_rhythm[50];
@@ -54,18 +55,19 @@ int main(int argc, char** argv) {
 
             char * dup = strdup(line.c_str());
             char *token = strtok(dup, ",");
-            int token_num = 0;
+            float token_num = 0;
 
             while(token != NULL){
-               token_num = atoi(token);
+               token_num = atof(token);
 
                pitch_dur_arr.push_back(token_num);
+               cout << "As a float: " << pitch_dur_arr.back();
 
                //cout << token << '\n';
                token = strtok(NULL, ",");
                }
             free(dup);
-            int_sequences.push(pitch_dur_arr);
+            float_sequences.push(pitch_dur_arr);
             pitch_dur_arr.clear();
          }
 
@@ -94,14 +96,14 @@ int main(int argc, char** argv) {
    outputfile.setTicksPerQuarterNote(tpq);
 
    int track_num = 1;
-   int queue_size = int_sequences.size();
+   int queue_size = float_sequences.size();
 
-   while(!int_sequences.empty()){
+   while(!float_sequences.empty()){
 
       cout << "queue size: ";
       cout << to_string(queue_size) << '\n';
-      cout << "ints in the " << to_string(track_num) << " track melody" << '\n';
-      vector<int> f_melody_vector = int_sequences.front();
+      cout << "floats in the " << to_string(track_num) << " track melody" << '\n';
+      vector<float> f_melody_vector = float_sequences.front();
       int k = 0;
       string test = "";
       int n = f_melody_vector.size();
@@ -110,17 +112,17 @@ int main(int argc, char** argv) {
          test = to_string(f_melody[k]);
          cout << test << '\n';
       }
-      int_sequences.pop();
+      float_sequences.pop();
 
-      cout << "ints in the " << to_string(track_num) << " track duration" << '\n';
-      vector<int> rhythm_vector = int_sequences.front();
+      cout << "floats in the " << to_string(track_num) << " track duration" << '\n';
+      vector<float> rhythm_vector = float_sequences.front();
       n = rhythm_vector.size();
       for ( k = 0; k < n; k++){
          f_rhythm[k] = rhythm_vector[k];
          test = to_string(f_rhythm[k]);
          cout << test << '\n';
       }
-      int_sequences.pop();
+      float_sequences.pop();
 
       int i=0;
       int actiontime = 0;      // temporary storage for MIDI event time
@@ -136,7 +138,7 @@ int main(int argc, char** argv) {
       }
 
       track_num++;
-      queue_size = int_sequences.size();
+      queue_size = float_sequences.size();
    }
 
    outputfile.sortTracks();         // make sure data is in correct order
